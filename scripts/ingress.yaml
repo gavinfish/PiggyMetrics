@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: piggy-metrics-ingress1
+  name: piggy-metrics-ingress
 spec:
   rules:
   - http:
