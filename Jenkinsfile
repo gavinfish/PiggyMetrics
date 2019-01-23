@@ -1,5 +1,16 @@
 node {
+    def checkFolderForDiffs(path) {
+        try {
+            // git diff will return 1 for changes (failure) which is caught in catch, or
+            // 0 meaning no changes 
+            sh "git diff --quiet --exit-code HEAD~1..HEAD ${path}"
+            return false
+        } catch (err) {
+            return true
+        }
+    }
 
+    def folders = ["config", "account-service", "auth-service", "gateway", "monitoring", "notification-service", "registry", "statistics-service", "turbine-stream-service"]
 
     stage('init') {
         checkout scm
@@ -20,80 +31,91 @@ node {
     }
 
     stage('image') {
-            parallel(
-                registry: {
-                    acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                        registryName: env.ACR_NAME, 
-                        resourceGroupName: env.ACR_RES_GROUP, 
-                        local: './registry',
-                        dockerfile: "Dockerfile",
-                        imageNames: [[image: "$env.ACR_REGISTRY/$env.REGISTRY_IMAGE_NAME:$env.BUILD_NUMBER"]]
-                },
-                config: {
-                    acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                        registryName: env.ACR_NAME, 
-                        resourceGroupName: env.ACR_RES_GROUP, 
-                        local: './config',
-                        dockerfile: "Dockerfile",
-                        imageNames: [[image: "$env.ACR_REGISTRY/$env.CONFIG_IMAGE_NAME:$env.BUILD_NUMBER"]]
-                },
-                account: {
-                    acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                        registryName: env.ACR_NAME, 
-                        resourceGroupName: env.ACR_RES_GROUP, 
-                        local: './account-service',
-                        dockerfile: "Dockerfile",
-                        imageNames: [[image: "$env.ACR_REGISTRY/$env.ACCOUNT_IMAGE_NAME:$env.BUILD_NUMBER"]]
-                },
-                auth: {
-                    acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                        registryName: env.ACR_NAME, 
-                        resourceGroupName: env.ACR_RES_GROUP, 
-                        local: './auth-service',
-                        dockerfile: "Dockerfile",
-                        imageNames: [[image: "$env.ACR_REGISTRY/$env.AUTH_IMAGE_NAME:$env.BUILD_NUMBER"]]
-                },
-                notification: {
-                    acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                        registryName: env.ACR_NAME, 
-                        resourceGroupName: env.ACR_RES_GROUP, 
-                        local: './notification-service',
-                        dockerfile: "Dockerfile",
-                        imageNames: [[image: "$env.ACR_REGISTRY/$env.NOTIFICATION_IMAGE_NAME:$env.BUILD_NUMBER"]]
-                },
-                turbine: {
-                    acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                        registryName: env.ACR_NAME, 
-                        resourceGroupName: env.ACR_RES_GROUP, 
-                        local: './turbine-stream-service',
-                        dockerfile: "Dockerfile",
-                        imageNames: [[image: "$env.ACR_REGISTRY/$env.TURBINE_IMAGE_NAME:$env.BUILD_NUMBER"]]
-                },
-                gateway: {
-                    acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                        registryName: env.ACR_NAME, 
-                        resourceGroupName: env.ACR_RES_GROUP, 
-                        local: './gateway',
-                        dockerfile: "Dockerfile",
-                        imageNames: [[image: "$env.ACR_REGISTRY/$env.GATEWAY_IMAGE_NAME:$env.BUILD_NUMBER"]]
-                },
-                monitoring: {
-                    acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                        registryName: env.ACR_NAME, 
-                        resourceGroupName: env.ACR_RES_GROUP, 
-                        local: './monitoring',
-                        dockerfile: "Dockerfile",
-                        imageNames: [[image: "$env.ACR_REGISTRY/$env.MONITORING_IMAGE_NAME:$env.BUILD_NUMBER"]]
-                },
-                statistics: {
-                    acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                        registryName: env.ACR_NAME, 
-                        resourceGroupName: env.ACR_RES_GROUP, 
-                        local: './statistics-service',
-                        dockerfile: "Dockerfile",
-                        imageNames: [[image: "$env.ACR_REGISTRY/$env.STATISTICS_IMAGE_NAME:$env.BUILD_NUMBER"]]
-                }
-            )
+        for (int i=0; i<folders.size(); i++) {
+            if (checkFolderForDiffs(folders[i]+"/")){
+                acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+                    registryName: env.ACR_NAME, 
+                    resourceGroupName: env.ACR_RES_GROUP, 
+                    local: './${folders[i]}',
+                    dockerfile: "Dockerfile",
+                    imageNames: [[image: "$env.ACR_REGISTRY/${folders[i]}:$env.BUILD_NUMBER"]]
+            }
+        }
+        
+        // parallel(
+        //     registry: {
+        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+        //             registryName: env.ACR_NAME, 
+        //             resourceGroupName: env.ACR_RES_GROUP, 
+        //             local: './registry',
+        //             dockerfile: "Dockerfile",
+        //             imageNames: [[image: "$env.ACR_REGISTRY/$env.REGISTRY_IMAGE_NAME:$env.BUILD_NUMBER"]]
+        //     },
+        //     config: {
+        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+        //             registryName: env.ACR_NAME, 
+        //             resourceGroupName: env.ACR_RES_GROUP, 
+        //             local: './config',
+        //             dockerfile: "Dockerfile",
+        //             imageNames: [[image: "$env.ACR_REGISTRY/$env.CONFIG_IMAGE_NAME:$env.BUILD_NUMBER"]]
+        //     },
+        //     account: {
+        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+        //             registryName: env.ACR_NAME, 
+        //             resourceGroupName: env.ACR_RES_GROUP, 
+        //             local: './account-service',
+        //             dockerfile: "Dockerfile",
+        //             imageNames: [[image: "$env.ACR_REGISTRY/$env.ACCOUNT_IMAGE_NAME:$env.BUILD_NUMBER"]]
+        //     },
+        //     auth: {
+        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+        //             registryName: env.ACR_NAME, 
+        //             resourceGroupName: env.ACR_RES_GROUP, 
+        //             local: './auth-service',
+        //             dockerfile: "Dockerfile",
+        //             imageNames: [[image: "$env.ACR_REGISTRY/$env.AUTH_IMAGE_NAME:$env.BUILD_NUMBER"]]
+        //     },
+        //     notification: {
+        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+        //             registryName: env.ACR_NAME, 
+        //             resourceGroupName: env.ACR_RES_GROUP, 
+        //             local: './notification-service',
+        //             dockerfile: "Dockerfile",
+        //             imageNames: [[image: "$env.ACR_REGISTRY/$env.NOTIFICATION_IMAGE_NAME:$env.BUILD_NUMBER"]]
+        //     },
+        //     turbine: {
+        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+        //             registryName: env.ACR_NAME, 
+        //             resourceGroupName: env.ACR_RES_GROUP, 
+        //             local: './turbine-stream-service',
+        //             dockerfile: "Dockerfile",
+        //             imageNames: [[image: "$env.ACR_REGISTRY/$env.TURBINE_IMAGE_NAME:$env.BUILD_NUMBER"]]
+        //     },
+        //     gateway: {
+        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+        //             registryName: env.ACR_NAME, 
+        //             resourceGroupName: env.ACR_RES_GROUP, 
+        //             local: './gateway',
+        //             dockerfile: "Dockerfile",
+        //             imageNames: [[image: "$env.ACR_REGISTRY/$env.GATEWAY_IMAGE_NAME:$env.BUILD_NUMBER"]]
+        //     },
+        //     monitoring: {
+        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+        //             registryName: env.ACR_NAME, 
+        //             resourceGroupName: env.ACR_RES_GROUP, 
+        //             local: './monitoring',
+        //             dockerfile: "Dockerfile",
+        //             imageNames: [[image: "$env.ACR_REGISTRY/$env.MONITORING_IMAGE_NAME:$env.BUILD_NUMBER"]]
+        //     },
+        //     statistics: {
+        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+        //             registryName: env.ACR_NAME, 
+        //             resourceGroupName: env.ACR_RES_GROUP, 
+        //             local: './statistics-service',
+        //             dockerfile: "Dockerfile",
+        //             imageNames: [[image: "$env.ACR_REGISTRY/$env.STATISTICS_IMAGE_NAME:$env.BUILD_NUMBER"]]
+        //     }
+        // )
     }
 
     stage('deploy') {
