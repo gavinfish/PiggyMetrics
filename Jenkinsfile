@@ -13,7 +13,9 @@ def checkFolderForDiffs(path) {
 
 // The map we'll store the parallel steps in before executing them.
 def stepsForParallel = folders.collectEntries {
-    ["echoing ${it}" : transformIntoStep(it)]
+    if (checkFolderForDiffs(it+"/")){
+        ["echoing ${it}" : transformIntoStep(it)]
+    }
 }
 
 
