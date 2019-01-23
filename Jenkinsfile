@@ -1,14 +1,16 @@
-node {
-    def checkFolderForDiffs(path) {
-        try {
-            // git diff will return 1 for changes (failure) which is caught in catch, or
-            // 0 meaning no changes 
-            sh "git diff --quiet --exit-code HEAD~1..HEAD ${path}"
-            return false
-        } catch (err) {
-            return true
-        }
+def checkFolderForDiffs(path) {
+    try {
+        // git diff will return 1 for changes (failure) which is caught in catch, or
+        // 0 meaning no changes 
+        sh "git diff --quiet --exit-code HEAD~1..HEAD ${path}"
+        return false
+    } catch (err) {
+        return true
     }
+}
+
+
+node {
 
     def folders = ["config", "account-service", "auth-service", "gateway", "monitoring", "notification-service", "registry", "statistics-service", "turbine-stream-service"]
 
