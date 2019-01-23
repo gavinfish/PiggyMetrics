@@ -49,7 +49,7 @@ node {
     stage('deploy') {
         for (int i=0; i<folders.size(); i++) {
             // if (checkFolderForDiffs(folders[i]+"/")){
-                withEnv(['IMAGE_TAG=latest']){
+                withEnv(['IMAGE_TAG=latest'],['TARGET_ROLE=blue']){
                     acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
                         configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
                         containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
