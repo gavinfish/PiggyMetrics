@@ -1,21 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: auth-service
+  name: account-service
 spec:
   selector:
     matchLabels:
-      app: auth-service
+      app: account-service
 
   template:
     metadata:
       labels:
-        app: auth-service
+        app: account-service
 
     spec:
       containers:
-      - name: ${AUTH_IMAGE_NAME}
-        image: "${ACR_REGISTRY}/${AUTH_IMAGE_NAME}:${BUILD_NUMBER}"
+      - name: ${ACCOUNT_IMAGE_NAME}
+        image: "${ACR_REGISTRY}/${ACCOUNT_IMAGE_NAME}:${BUILD_NUMBER}"
         env:
           - name: CONFIG_SERVICE_PASSWORD
             value: admin
@@ -31,16 +31,3 @@ spec:
         - containerPort: 80
       imagePullSecrets:
       - name: "${ACR_SECRET}"
-
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: auth-service
-spec:
-  selector:
-    app: auth-service
-  ports:
-  - port: 80
-    targetPort: 80
-  

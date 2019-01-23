@@ -1,24 +1,24 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: config
+  name: statistics-service
 spec:
   selector:
     matchLabels:
-      app: config
+      app: statistics-service
 
   template:
     metadata:
       labels:
-        app: config
+        app: statistics-service
 
     spec:
       containers:
-      - name: ${CONFIG_IMAGE_NAME}
-        image: "${ACR_REGISTRY}/${CONFIG_IMAGE_NAME}:${BUILD_NUMBER}"
+      - name: ${STATISTICS_IMAGE_NAME}
+        image: "${ACR_REGISTRY}/${STATISTICS_IMAGE_NAME}:${BUILD_NUMBER}"
         env:
           - name: CONFIG_SERVICE_PASSWORD
-            value: s3cr3t
+            value: admin
           - name: NOTIFICATION_SERVICE_PASSWORD
             value: admin
           - name: STATISTICS_SERVICE_PASSWORD
@@ -28,19 +28,7 @@ spec:
           - name: MONGODB_CONNECTION_STRING
             value: ${DB_CONNECTION_STRING}
         ports:
-        - containerPort: 8888
+          - containerPort: 80
       imagePullSecrets:
       - name: "${ACR_SECRET}"
-
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: config
-spec:
-  selector:
-    app: config
-  ports:
-  - port: 8888
-    targetPort: 8888
   

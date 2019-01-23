@@ -1,24 +1,24 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: registry
+  name: config
 spec:
   selector:
     matchLabels:
-      app: registry
+      app: config
 
   template:
     metadata:
       labels:
-        app: registry
+        app: config
 
     spec:
       containers:
-      - name: ${REGISTRY_IMAGE_NAME}
-        image: "${ACR_REGISTRY}/${REGISTRY_IMAGE_NAME}:${BUILD_NUMBER}"
+      - name: ${CONFIG_IMAGE_NAME}
+        image: "${ACR_REGISTRY}/${CONFIG_IMAGE_NAME}:${BUILD_NUMBER}"
         env:
           - name: CONFIG_SERVICE_PASSWORD
-            value: admin
+            value: s3cr3t
           - name: NOTIFICATION_SERVICE_PASSWORD
             value: admin
           - name: STATISTICS_SERVICE_PASSWORD
@@ -28,19 +28,7 @@ spec:
           - name: MONGODB_CONNECTION_STRING
             value: ${DB_CONNECTION_STRING}
         ports:
-        - containerPort: 8761
+        - containerPort: 8888
       imagePullSecrets:
       - name: "${ACR_SECRET}"
-
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: registry
-spec:
-  selector:
-    app: registry
-  ports:
-  - port: 8761
-    targetPort: 8761
   

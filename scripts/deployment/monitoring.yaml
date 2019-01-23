@@ -31,16 +31,4 @@ spec:
         - containerPort: 8080
       imagePullSecrets:
       - name: "${ACR_SECRET}"
-
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: monitoring
-spec:
-  selector:
-    app: monitoring
-  ports:
-  - port: 8080
-    targetPort: 8080
   

@@ -1,21 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gateway
+  name: notification-service
 spec:
   selector:
     matchLabels:
-      app: gateway
+      app: notification-service
 
   template:
     metadata:
       labels:
-        app: gateway
+        app: notification-service
 
     spec:
       containers:
-      - name: ${GATEWAY_IMAGE_NAME}
-        image: "${ACR_REGISTRY}/${GATEWAY_IMAGE_NAME}:${BUILD_NUMBER}"
+      - name: ${NOTIFICATION_IMAGE_NAME}
+        image: "${ACR_REGISTRY}/${NOTIFICATION_IMAGE_NAME}:${BUILD_NUMBER}"
         env:
           - name: CONFIG_SERVICE_PASSWORD
             value: admin
@@ -28,23 +28,7 @@ spec:
           - name: MONGODB_CONNECTION_STRING
             value: mongodb://piggy:nSpeYPy89Fs2KPSBe4ACXhaTOjnABHPqWCcufY4sPfD6NYDXNSaRGW9dZ8I8BBsx1oGU5IEI58EPEOTj4FjnJg==@piggy.documents.azure.com:10255/?ssl=true&replicaSet=globaldb
         ports:
-        - containerPort: 4000
+          - containerPort: 80
       imagePullSecrets:
       - name: "${ACR_SECRET}"
-
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: gateway
-spec:
-  selector:
-    app: gateway
-  ports:
-  - name: management
-    port: 4000
-    targetPort: 4000
-  - name: http
-    port: 80
-    targetPort: 80
-  type: LoadBalancer
+  

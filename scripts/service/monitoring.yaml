@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: monitoring
+spec:
+  selector:
+    app: monitoring
+  ports:
+  - port: 8080
+    targetPort: 8080
+  

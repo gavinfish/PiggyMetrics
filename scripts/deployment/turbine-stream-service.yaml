@@ -31,16 +31,3 @@ spec:
         - containerPort: 80
       imagePullSecrets:
       - name: "${ACR_SECRET}"
-
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: turbine-stream-service
-spec:
-  selector:
-    app: turbine-stream-service
-  ports:
-  - port: 80
-    targetPort: 80
-  
