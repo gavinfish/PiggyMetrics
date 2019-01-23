@@ -35,7 +35,7 @@ def transformIntoStep(inputString) {
     }
 }
 
-node {
+node('master') {
 
 
     stage('init') {
