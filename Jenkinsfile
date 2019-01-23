@@ -20,7 +20,6 @@ node {
     }
 
     stage('image') {
-        steps {
             parallel(
                 registry: {
                     acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
@@ -95,7 +94,6 @@ node {
                         imageNames: [[image: "$env.ACR_REGISTRY/$env.STATISTICS_IMAGE_NAME:$env.BUILD_NUMBER"]]
                 }
             )
-        }
     }
 
     stage('deploy') {
