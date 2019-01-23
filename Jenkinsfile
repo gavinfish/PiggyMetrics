@@ -38,7 +38,7 @@ node {
                 acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
                     registryName: env.ACR_NAME, 
                     resourceGroupName: env.ACR_RES_GROUP, 
-                    local: './${folders[i]}',
+                    local: "./${folders[i]}",
                     dockerfile: "Dockerfile",
                     imageNames: [[image: "$env.ACR_REGISTRY/${folders[i]}:$env.BUILD_NUMBER"], [image: "$env.ACR_REGISTRY/${folders[i]}:latest"]]
             // }
