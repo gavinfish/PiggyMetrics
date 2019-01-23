@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: auth-service
+  name: auth-service-${TARGET_ROLE}
 spec:
   selector:
     matchLabels:
@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: auth-service
+        role: ${TARGET_ROLE}
 
     spec:
       containers:

@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: config
+  name: config-${TARGET_ROLE}
 spec:
   selector:
     matchLabels:
@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: config
+        role: ${TARGET_ROLE}
 
     spec:
       containers:

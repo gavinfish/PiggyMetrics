@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: registry
+  name: registry-${TARGET_ROLE}
 spec:
   selector:
     matchLabels:
@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: registry
+        role: ${TARGET_ROLE}
 
     spec:
       containers:

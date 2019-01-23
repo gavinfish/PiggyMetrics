@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gateway
+  name: gateway-${TARGET_ROLE}
 spec:
   selector:
     matchLabels:
@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: gateway
+        role: ${TARGET_ROLE}
 
     spec:
       containers:

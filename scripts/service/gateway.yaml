@@ -2,9 +2,12 @@ kind: Service
 apiVersion: v1
 metadata:
   name: gateway
+  labels:
+    role: ${TARGET_ROLE}
 spec:
   selector:
     app: gateway
+    role: ${TARGET_ROLE}
   ports:
   - name: management
     port: 4000
