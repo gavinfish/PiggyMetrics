@@ -51,7 +51,15 @@ node {
             // if (checkFolderForDiffs(folders[i]+"/")){
                 withEnv(['IMAGE_TAG=latest']){
                     acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                        configFilePaths: 'scripts/${folders[i]}.yaml', 
+                        configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
+                        containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+                        containerService: "$env.AKS_NAME | AKS",
+                        enableConfigSubstitution: true, 
+                        resourceGroupName: env.AKS_RES_GROUP,
+                        secretName: env.ACR_SECRET
+
+                    acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+                        configFilePaths: "scripts/service/${folders[i]}.yaml", 
                         containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
                         containerService: "$env.AKS_NAME | AKS",
                         enableConfigSubstitution: true, 
