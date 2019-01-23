@@ -16,7 +16,7 @@ node {
     }
 
     stage('build') {
-         sh 'mvn clean package'
+         sh 'mvn package'
     }
 
     stage('image') {
