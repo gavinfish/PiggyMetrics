@@ -24,14 +24,12 @@ def transformIntoStep(inputString) {
     // To do this, you need to wrap the code below in { }, and either return
     // that explicitly, or use { -> } syntax.
     return {
-        node {
             acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
                 registryName: env.ACR_NAME, 
                 resourceGroupName: env.ACR_RES_GROUP, 
                 local: "./${inputString}",
                 dockerfile: "Dockerfile",
                 imageNames: [[image: "$env.ACR_REGISTRY/${inputString}:$env.BUILD_NUMBER"], [image: "$env.ACR_REGISTRY/${inputString}:latest"]]
-        }
     }
 }
 
