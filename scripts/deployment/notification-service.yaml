@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ${NOTIFICATION_IMAGE_NAME}
-        image: "${ACR_REGISTRY}/${NOTIFICATION_IMAGE_NAME}:${BUILD_NUMBER}"
+        image: "${ACR_REGISTRY}/${NOTIFICATION_IMAGE_NAME}:${IMAGE_TAG}"
         env:
           - name: CONFIG_SERVICE_PASSWORD
             value: admin

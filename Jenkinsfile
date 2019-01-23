@@ -34,29 +34,31 @@ node {
 
     stage('image') {
         for (int i=0; i<folders.size(); i++) {
-            if (checkFolderForDiffs(folders[i]+"/")){
+            // if (checkFolderForDiffs(folders[i]+"/")){
                 acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
                     registryName: env.ACR_NAME, 
                     resourceGroupName: env.ACR_RES_GROUP, 
                     local: './${folders[i]}',
                     dockerfile: "Dockerfile",
-                    imageNames: [[image: "$env.ACR_REGISTRY/${folders[i]}:$env.BUILD_NUMBER"]]
-            }
+                    imageNames: [[image: "$env.ACR_REGISTRY/${folders[i]}:$env.BUILD_NUMBER"], [image: "$env.ACR_REGISTRY/${folders[i]}:latest"]]
+            // }
         }
         
     }
 
     stage('deploy') {
         for (int i=0; i<folders.size(); i++) {
-            if (checkFolderForDiffs(folders[i]+"/")){
-                acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                configFilePaths: 'scripts/${folders[i]}.yaml', 
-                containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
-                containerService: "$env.AKS_NAME | AKS",
-                enableConfigSubstitution: true, 
-                resourceGroupName: env.AKS_RES_GROUP,
-                secretName: env.ACR_SECRET
-            }
+            // if (checkFolderForDiffs(folders[i]+"/")){
+                withEnv(['IMAGE_TAG=latest']){
+                    acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+                        configFilePaths: 'scripts/${folders[i]}.yaml', 
+                        containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+                        containerService: "$env.AKS_NAME | AKS",
+                        enableConfigSubstitution: true, 
+                        resourceGroupName: env.AKS_RES_GROUP,
+                        secretName: env.ACR_SECRET
+                }
+            // }
         }
     }
 
