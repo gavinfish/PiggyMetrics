@@ -37,6 +37,11 @@ def transformIntoStep(inputString) {
     }
 }
 
+def CURRENT_VERSION = blue
+def TARGET_VERSION = green
+
+def userInput
+
 node('master') {
 
 
@@ -50,43 +55,22 @@ node('master') {
     }
 
     stage('image') {
-        // Actually run the steps in parallel - parallel takes a map as an argument,
-        // hence the above.
+
         parallel stepsForParallel
-        // for (int i=0; i<folders.size(); i++) {
-        //     // if (checkFolderForDiffs(folders[i]+"/")){
-        //         acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-        //             registryName: env.ACR_NAME, 
-        //             resourceGroupName: env.ACR_RES_GROUP, 
-        //             local: "./${folders[i]}",
-        //             dockerfile: "Dockerfile",
-        //             imageNames: [[image: "$env.ACR_REGISTRY/${folders[i]}:$env.BUILD_NUMBER"], [image: "$env.ACR_REGISTRY/${folders[i]}:latest"]]
-        //     // }
-        // }
         
     }
 
     stage('deploy') {
         for (int i=0; i<folders.size(); i++) {
-            // if (checkFolderForDiffs(folders[i]+"/")){
-                withEnv(['IMAGE_TAG=latest', 'TARGET_ROLE=blue']){
-                    acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                        configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
-                        containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
-                        containerService: "$env.AKS_NAME | AKS",
-                        enableConfigSubstitution: true, 
-                        resourceGroupName: env.AKS_RES_GROUP,
-                        secretName: env.ACR_SECRET
-
-                    acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                        configFilePaths: "scripts/service/${folders[i]}.yaml", 
-                        containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
-                        containerService: "$env.AKS_NAME | AKS",
-                        enableConfigSubstitution: true, 
-                        resourceGroupName: env.AKS_RES_GROUP,
-                        secretName: env.ACR_SECRET
-                }
-            // }
+            withEnv(['IMAGE_TAG=latest', 'TARGET_ROLE=test']){
+                acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+                    configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
+                    containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+                    containerService: "$env.AKS_NAME | AKS",
+                    enableConfigSubstitution: true, 
+                    resourceGroupName: env.AKS_RES_GROUP,
+                    secretName: env.ACR_SECRET
+            }
         }
     }
 
@@ -98,4 +82,75 @@ node('master') {
         curl --header "Authorization: Bearer $token" http://23.96.0.201/accounts/current
         '''
     }
+
+    stage('preview') {
+        for (int i=0; i<folders.size(); i++) {
+            withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${TARGET_VERSION}"]){
+                acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+                    configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
+                    containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+                    containerService: "$env.AKS_NAME | AKS",
+                    enableConfigSubstitution: true, 
+                    resourceGroupName: env.AKS_RES_GROUP,
+                    secretName: env.ACR_SECRET
+
+                acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+                    configFilePaths: "scripts/service/${folders[i]}.yaml", 
+                    containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+                    containerService: "$env.AKS_NAME | AKS",
+                    enableConfigSubstitution: true, 
+                    resourceGroupName: env.AKS_RES_GROUP,
+                    secretName: env.ACR_SECRET
+            }
+        }
+    }
+
+    stage('preview-test') {
+
+    }
+
+    stage('switch') {
+        for (int i=0; i<folders.size(); i++) {
+            withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${TARGET_VERSION}"]){
+                acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+                    configFilePaths: "scripts/service/${folders[i]}.yaml", 
+                    containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+                    containerService: "$env.AKS_NAME | AKS",
+                    enableConfigSubstitution: true, 
+                    resourceGroupName: env.AKS_RES_GROUP,
+                    secretName: env.ACR_SECRET
+            }
+        }
+    }
+
+    stage('confirm rollback') {
+
+        try {
+            userInput = input(
+                id: 'Proceed1', message: 'Do you want to continue?', parameters: [
+                [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please confirm you want to continue the process']
+                ])
+        } catch(err) { // input false
+            echo "Aborted"
+        }
+    }
+
+    
+    if (userInput == true) {
+        stage('rollback') {
+            for (int i=0; i<folders.size(); i++) {
+                withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${CURRENT_VERSION}"]){
+                    acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+                        configFilePaths: "scripts/service/${folders[i]}.yaml", 
+                        containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+                        containerService: "$env.AKS_NAME | AKS",
+                        enableConfigSubstitution: true, 
+                        resourceGroupName: env.AKS_RES_GROUP,
+                        secretName: env.ACR_SECRET
+                }
+            }
+        }
+    } else {
+        // Send a notification
+    } 
 }
