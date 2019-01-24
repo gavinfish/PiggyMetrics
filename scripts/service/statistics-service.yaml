@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: statistics-service
+  labels:
+    role: ${TARGET_ROLE}
+spec:
+  selector:
+    app: statistics-service
+    role: ${TARGET_ROLE}
+  ports:
+  - port: 80
+    targetPort: 80
+  

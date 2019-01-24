@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: notification-service-${TARGET_ROLE}
+spec:
+  selector:
+    matchLabels:
+      app: notification-service
+
+  template:
+    metadata:
+      labels:
+        app: notification-service
+        role: ${TARGET_ROLE}
+
+    spec:
+      containers:
+      - name: ${NOTIFICATION_IMAGE_NAME}
+        image: "${ACR_REGISTRY}/${NOTIFICATION_IMAGE_NAME}:${IMAGE_TAG}"
+        env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: admin
+          - name: NOTIFICATION_SERVICE_PASSWORD
+            value: admin
+          - name: STATISTICS_SERVICE_PASSWORD
+            value: admin
+          - name: ACCOUNT_SERVICE_PASSWORD
+            value: admin
+          - name: MONGODB_CONNECTION_STRING
+            value: mongodb://piggy:nSpeYPy89Fs2KPSBe4ACXhaTOjnABHPqWCcufY4sPfD6NYDXNSaRGW9dZ8I8BBsx1oGU5IEI58EPEOTj4FjnJg==@piggy.documents.azure.com:10255/?ssl=true&replicaSet=globaldb
+        ports:
+          - containerPort: 80
+      imagePullSecrets:
+      - name: "${ACR_SECRET}"
+  

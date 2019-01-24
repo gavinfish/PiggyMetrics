@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: registry
+  labels:
+    role: ${TARGET_ROLE}
+spec:
+  selector:
+    app: registry
+    role: ${TARGET_ROLE}
+  ports:
+  - port: 8761
+    targetPort: 8761
+  

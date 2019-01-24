@@ -1,0 +1,1 @@
+kubectl create -f account-service.yaml  -f auth-service.yaml  -f notification-service.yaml  -f turbine-stream-service.yaml -f gateway.yaml -f monitoring.yaml -f statistics-service.yaml

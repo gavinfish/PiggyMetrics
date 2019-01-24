@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: turbine-stream-service-${TARGET_ROLE}
+spec:
+  selector:
+    matchLabels:
+      app: turbine-stream-service
+
+  template:
+    metadata:
+      labels:
+        app: turbine-stream-service
+        role: ${TARGET_ROLE}
+
+    spec:
+      containers:
+      - name: ${TURBINE_IMAGE_NAME}
+        image: "${ACR_REGISTRY}/${TURBINE_IMAGE_NAME}:${IMAGE_TAG}"
+        env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: admin
+          - name: NOTIFICATION_SERVICE_PASSWORD
+            value: admin
+          - name: STATISTICS_SERVICE_PASSWORD
+            value: admin
+          - name: ACCOUNT_SERVICE_PASSWORD
+            value: admin
+          - name: MONGODB_CONNECTION_STRING
+            value: ${DB_CONNECTION_STRING}
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: "${ACR_SECRET}"

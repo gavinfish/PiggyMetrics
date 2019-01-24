@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: piggy-metrics-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /app
+        backend:
+          serviceName: gateway
+          servicePort: 80
+      - path: /mq
+        backend:
+          serviceName: rabbitmq
+          servicePort: 15672
+      - path: /monitoring
+        backend:
+          serviceName: monitoring
+          servicePort: 8080
+      - path: /registry
+        backend:
+          serviceName: registry
+          servicePort: 8761
