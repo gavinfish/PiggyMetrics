@@ -24,15 +24,17 @@ def transformIntoStep(inputString) {
     // To do this, you need to wrap the code below in { }, and either return
     // that explicitly, or use { -> } syntax.
     return {
-        node('master') {
-            if (checkFolderForDiffs(inputString+"/")){
-                acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                    registryName: env.ACR_NAME, 
-                    resourceGroupName: env.ACR_RES_GROUP, 
-                    local: "./${inputString}",
-                    dockerfile: "Dockerfile",
-                    imageNames: [[image: "$env.ACR_REGISTRY/${inputString}:$env.BUILD_NUMBER"], [image: "$env.ACR_REGISTRY/${inputString}:latest"]]
-            }
+        node('linux-test') {
+            checkout scm
+
+            sh "cd ${inputString}; mvn clean package -DskipTests; cd .."
+
+            acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+                registryName: env.ACR_NAME, 
+                resourceGroupName: env.ACR_RES_GROUP, 
+                local: "./${inputString}",
+                dockerfile: "Dockerfile",
+                imageNames: [[image: "$env.ACR_REGISTRY/${inputString}:$env.BUILD_NUMBER"], [image: "$env.ACR_REGISTRY/${inputString}:latest"]]
         }
     }
 }
@@ -85,7 +87,7 @@ node('master') {
 
     stage('preview') {
         for (int i=0; i<folders.size(); i++) {
-            withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${TARGET_VERSION}"]){
+            withEnv(["IMAGE_TAG=${BUILD_NUMBER}", "TARGET_ROLE=${TARGET_VERSION}"]){
                 acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
                     configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
                     containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
@@ -127,8 +129,8 @@ node('master') {
 
         try {
             userInput = input(
-                id: 'Proceed1', message: 'Do you want to continue?', parameters: [
-                [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please confirm you want to continue the process']
+                id: 'Proceed1', message: 'Do you want to rollback?', parameters: [
+                [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please confirm you want to rollback the deployment']
                 ])
         } catch(err) { // input false
             echo "Aborted"
