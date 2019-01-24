@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ${REGISTRY_IMAGE_NAME}
-        image: "${ACR_REGISTRY}/${REGISTRY_IMAGE_NAME}:${IMAGE}"
+        image: "${ACR_REGISTRY}/${REGISTRY_IMAGE_NAME}:${IMAGE_TAG}"
         env:
           - name: CONFIG_SERVICE_PASSWORD
             value: admin
