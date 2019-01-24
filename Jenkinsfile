@@ -13,9 +13,7 @@ def checkFolderForDiffs(path) {
 
 // The map we'll store the parallel steps in before executing them.
 def stepsForParallel = folders.collectEntries {
-    if (checkFolderForDiffs(it+"/")){
-        ["echoing ${it}" : transformIntoStep(it)]
-    }
+    ["echoing ${it}" : transformIntoStep(it)]
 }
 
 
@@ -27,12 +25,14 @@ def transformIntoStep(inputString) {
     // that explicitly, or use { -> } syntax.
     return {
         node('master') {
-            acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
-                registryName: env.ACR_NAME, 
-                resourceGroupName: env.ACR_RES_GROUP, 
-                local: "./${inputString}",
-                dockerfile: "Dockerfile",
-                imageNames: [[image: "$env.ACR_REGISTRY/${inputString}:$env.BUILD_NUMBER"], [image: "$env.ACR_REGISTRY/${inputString}:latest"]]
+            if (checkFolderForDiffs(inputString+"/")){
+                acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
+                    registryName: env.ACR_NAME, 
+                    resourceGroupName: env.ACR_RES_GROUP, 
+                    local: "./${inputString}",
+                    dockerfile: "Dockerfile",
+                    imageNames: [[image: "$env.ACR_REGISTRY/${inputString}:$env.BUILD_NUMBER"], [image: "$env.ACR_REGISTRY/${inputString}:latest"]]
+            }
         }
     }
 }
