@@ -99,11 +99,11 @@ node('master') {
     }
 
     stage('test') {
-        sh '''
-        data=$(curl 'http://23.96.0.201/uaa/oauth/token' -H 'Authorization: Basic YnJvd3Nlcjo=' --data 'scope=ui&username=jieshe&password=123456&grant_type=password')
-        token=$(echo $data | awk -F'[",:}"]' '{print $(5)}')
-        curl --header "Authorization: Bearer $token" http://23.96.0.201/accounts/current
-        '''
+        // sh '''
+        // data=$(curl 'http://23.96.0.201/uaa/oauth/token' -H 'Authorization: Basic YnJvd3Nlcjo=' --data 'scope=ui&username=jieshe&password=123456&grant_type=password')
+        // token=$(echo $data | awk -F'[",:}"]' '{print $(5)}')
+        // curl --header "Authorization: Bearer $token" http://23.96.0.201/accounts/current
+        // '''
     }
 
     stage('preview') {
