@@ -169,7 +169,7 @@ function greetingPageAgain() {
     });
     $("#righttitle, #lefttitle").empty();
     $("#righttitle").append('<span class="bluetext">last seen: </span>' + user.lastSeen);
-    $("#lefttitle").append(escape(user.login) + '<span class="bluetext"> demo</span>');
+    $("#lefttitle").append(escape(user.login) + '<span class="bluetext"> DEMOS</span>');
 }
 function showGreetingUnits() {
     $("#lefttitle").fadeIn(500);
