@@ -87,7 +87,7 @@ node('master') {
 
     stage('preview') {
         for (int i=0; i<folders.size(); i++) {
-            withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${TARGET_VERSION}"]){
+            withEnv(["IMAGE_TAG=${BUILD_NUMBER}", "TARGET_ROLE=${TARGET_VERSION}"]){
                 acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
                     configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
                     containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
