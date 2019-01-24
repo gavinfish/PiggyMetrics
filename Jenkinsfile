@@ -24,10 +24,9 @@ def transformIntoStep(inputString) {
     // To do this, you need to wrap the code below in { }, and either return
     // that explicitly, or use { -> } syntax.
     return {
-        node{
+        node('linux-test') {
             checkout scm
 
-            sh "sudo apt install maven --yes"
             sh "cd ${inputString}; mvn clean package; cd .."
 
             acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
