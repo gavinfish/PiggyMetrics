@@ -60,18 +60,19 @@ node('master') {
         
     }
 
-    stage('deploy') {
-        for (int i=0; i<folders.size(); i++) {
-            withEnv(['IMAGE_TAG=latest', 'TARGET_ROLE=test']){
-                acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                    configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
-                    containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
-                    containerService: "$env.AKS_NAME | AKS",
-                    enableConfigSubstitution: true, 
-                    resourceGroupName: env.AKS_RES_GROUP,
-                    secretName: env.ACR_SECRET
-            }
-        }
+    stage('test-deploy') {
+        // comment out for memery restriction
+        // for (int i=0; i<folders.size(); i++) {
+        //     withEnv(['IMAGE_TAG=latest', 'TARGET_ROLE=test']){
+        //         acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+        //             configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
+        //             containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+        //             containerService: "$env.AKS_NAME | AKS",
+        //             enableConfigSubstitution: true, 
+        //             resourceGroupName: env.AKS_RES_GROUP,
+        //             secretName: env.ACR_SECRET
+        //     }
+        // }
     }
 
     stage('test') {
