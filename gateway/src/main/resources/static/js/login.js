@@ -35,7 +35,7 @@ $('#signup').submit(function(e) {
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 if (xhr.status == 400) {
-                    alert("Sorry, account with the same name already exists.");
+                    alert("Sorry, account with the same name already exists. TESTEFNSDVKJkj");
                 } else {
                     alert("An error during account creation. Please, try again.");
                 }
