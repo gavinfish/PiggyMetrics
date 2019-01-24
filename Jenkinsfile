@@ -27,7 +27,7 @@ def transformIntoStep(inputString) {
         node('linux-test') {
             checkout scm
 
-            sh "cd ${inputString}; mvn clean package; cd .."
+            sh "cd ${inputString}; mvn clean package -DskipTests; cd .."
 
             acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
                 registryName: env.ACR_NAME, 
