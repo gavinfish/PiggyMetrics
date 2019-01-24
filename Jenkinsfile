@@ -129,8 +129,8 @@ node('master') {
 
         try {
             userInput = input(
-                id: 'Proceed1', message: 'Do you want to continue?', parameters: [
-                [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please confirm you want to continue the process']
+                id: 'Proceed1', message: 'Do you want to rollback?', parameters: [
+                [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please confirm you want to rollback the deployment']
                 ])
         } catch(err) { // input false
             echo "Aborted"
