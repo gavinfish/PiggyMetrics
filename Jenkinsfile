@@ -27,6 +27,7 @@ def transformIntoStep(inputString) {
         node{
             checkout scm
 
+            sh "sudo apt install maven --yes"
             sh "cd ${inputString}; mvn clean package; cd .."
 
             acrQuickTask azureCredentialsId: env.AZURE_CRED_ID, 
