@@ -125,7 +125,7 @@ node('master') {
         }
     }
 
-    stage('confirm rollback') {
+    stage('confirm switch back') {
 
         try {
             userInput = input(
@@ -139,7 +139,7 @@ node('master') {
 
     
     if (userInput == true) {
-        stage('rollback') {
+        stage('switch back') {
             for (int i=0; i<folders.size(); i++) {
                 withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${CURRENT_VERSION}"]){
                     acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
