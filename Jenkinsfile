@@ -40,7 +40,7 @@ def transformIntoStep(inputString) {
 }
 
 def CURRENT_VERSION = "blue"
-def TARGET_VERSION = "canary"
+def TARGET_VERSION = "green"
 
 def userInput
 
