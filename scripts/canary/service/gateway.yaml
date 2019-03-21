@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  ports:
+  - name: management
+    port: 4000
+    targetPort: 4000
+  - name: http
+    port: 80
+    targetPort: 80
+  type: LoadBalancer

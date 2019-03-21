@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: monitoring
+  labels:
+    role: ${TARGET_ROLE}
+spec:
+  selector:
+    app: monitoring
+    role: ${TARGET_ROLE}
+  ports:
+  - port: 8080
+    targetPort: 8080
+  

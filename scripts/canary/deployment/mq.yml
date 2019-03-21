@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rabbitmq-${TARGET_ROLE}
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        role: ${TARGET_ROLE}
+
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: admin
+        ports:
+        - containerPort: 5672

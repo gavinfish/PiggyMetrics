@@ -1,4 +1,4 @@
-def folders = ["config", "account-service", "auth-service", "gateway", "monitoring", "notification-service", "registry", "statistics-service", "turbine-stream-service"]
+def folders = ["gateway"]
 
 def checkFolderForDiffs(path) {
     try {
@@ -40,7 +40,7 @@ def transformIntoStep(inputString) {
 }
 
 def CURRENT_VERSION = "blue"
-def TARGET_VERSION = "canary"
+def TARGET_VERSION = "green"
 
 def userInput
 
@@ -89,7 +89,7 @@ node('master') {
         for (int i=0; i<folders.size(); i++) {
             withEnv(["IMAGE_TAG=${BUILD_NUMBER}", "TARGET_ROLE=${TARGET_VERSION}"]){
                 acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                    configFilePaths: "scripts/deployment/${folders[i]}.yaml", 
+                    configFilePaths: "scripts/canary/deployment/${folders[i]}.yaml", 
                     containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
                     containerService: "$env.AKS_NAME | AKS",
                     enableConfigSubstitution: true, 
@@ -97,7 +97,7 @@ node('master') {
                     secretName: env.ACR_SECRET
 
                 acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                    configFilePaths: "scripts/service/${folders[i]}.yaml", 
+                    configFilePaths: "scripts/canary/service/${folders[i]}.yaml", 
                     containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
                     containerService: "$env.AKS_NAME | AKS",
                     enableConfigSubstitution: true, 
@@ -115,7 +115,7 @@ node('master') {
         for (int i=0; i<folders.size(); i++) {
             withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${TARGET_VERSION}"]){
                 acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                    configFilePaths: "scripts/service/${folders[i]}.yaml", 
+                    configFilePaths: "scripts/canary/service/${folders[i]}.yaml", 
                     containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
                     containerService: "$env.AKS_NAME | AKS",
                     enableConfigSubstitution: true, 
@@ -127,32 +127,32 @@ node('master') {
 
     stage('confirm switch back') {
 
-        try {
-            userInput = input(
-                id: 'Proceed1', message: 'Do you want to switch back?', parameters: [
-                [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please confirm you want to switch back the deployment']
-                ])
-        } catch(err) { // input false
-            echo "Aborted"
-        }
+        // try {
+        //     userInput = input(
+        //         id: 'Proceed1', message: 'Do you want to switch back?', parameters: [
+        //         [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please confirm you want to switch back the deployment']
+        //         ])
+        // } catch(err) { // input false
+        //     echo "Aborted"
+        // }
     }
 
     
-    if (userInput == true) {
-        stage('switch back') {
-            for (int i=0; i<folders.size(); i++) {
-                withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${CURRENT_VERSION}"]){
-                    acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                        configFilePaths: "scripts/service/${folders[i]}.yaml", 
-                        containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
-                        containerService: "$env.AKS_NAME | AKS",
-                        enableConfigSubstitution: true, 
-                        resourceGroupName: env.AKS_RES_GROUP,
-                        secretName: env.ACR_SECRET
-                }
-            }
-        }
-    } else {
-        // Send a notification
-    } 
+    // if (userInput == true) {
+    //     stage('switch back') {
+    //         for (int i=0; i<folders.size(); i++) {
+    //             withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${CURRENT_VERSION}"]){
+    //                 acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+    //                     configFilePaths: "scripts/canary/service/${folders[i]}.yaml", 
+    //                     containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+    //                     containerService: "$env.AKS_NAME | AKS",
+    //                     enableConfigSubstitution: true, 
+    //                     resourceGroupName: env.AKS_RES_GROUP,
+    //                     secretName: env.ACR_SECRET
+    //             }
+    //         }
+    //     }
+    // } else {
+    //     // Send a notification
+    // } 
 }

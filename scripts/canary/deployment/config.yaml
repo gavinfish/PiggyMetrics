@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: config-${TARGET_ROLE}
+spec:
+  selector:
+    matchLabels:
+      app: config
+
+  template:
+    metadata:
+      labels:
+        app: config
+        role: ${TARGET_ROLE}
+
+    spec:
+      containers:
+      - name: ${CONFIG_IMAGE_NAME}
+        image: "${ACR_REGISTRY}/${CONFIG_IMAGE_NAME}:${IMAGE_TAG}"
+        env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: s3cr3t
+          - name: NOTIFICATION_SERVICE_PASSWORD
+            value: admin
+          - name: STATISTICS_SERVICE_PASSWORD
+            value: admin
+          - name: ACCOUNT_SERVICE_PASSWORD
+            value: admin
+          - name: MONGODB_CONNECTION_STRING
+            value: ${DB_CONNECTION_STRING}
+        ports:
+        - containerPort: 8888
+      imagePullSecrets:
+      - name: "${ACR_SECRET}"
+  
