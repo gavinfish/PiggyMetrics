@@ -127,32 +127,28 @@ node('master') {
 
     stage('confirm switch back') {
 
-        // try {
-        //     userInput = input(
-        //         id: 'Proceed1', message: 'Do you want to switch back?', parameters: [
-        //         [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please confirm you want to switch back the deployment']
-        //         ])
-        // } catch(err) { // input false
-        //     echo "Aborted"
-        // }
+        try {
+            userInput = input(
+                id: 'Proceed1', message: 'Do you want to apply istio?', parameters: [
+                [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please confirm you want to apply istio']
+                ])
+        } catch(err) { // input false
+            echo "Aborted"
+        }
     }
 
     
-    // if (userInput == true) {
-    //     stage('switch back') {
-    //         for (int i=0; i<folders.size(); i++) {
-    //             withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${CURRENT_VERSION}"]){
-    //                 acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-    //                     configFilePaths: "scripts/canary/service/${folders[i]}.yaml", 
-    //                     containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
-    //                     containerService: "$env.AKS_NAME | AKS",
-    //                     enableConfigSubstitution: true, 
-    //                     resourceGroupName: env.AKS_RES_GROUP,
-    //                     secretName: env.ACR_SECRET
-    //             }
-    //         }
-    //     }
-    // } else {
-    //     // Send a notification
-    // } 
+    if (userInput == true) {
+        stage('apply istio') {
+                acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+                    configFilePaths: "scripts/canary/istio/istio.yml", 
+                    containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+                    containerService: "$env.AKS_NAME | AKS",
+                    enableConfigSubstitution: true, 
+                    resourceGroupName: env.AKS_RES_GROUP,
+                    secretName: env.ACR_SECRET
+        }
+    } else {
+        // Send a notification
+    } 
 }

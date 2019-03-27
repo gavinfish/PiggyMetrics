@@ -27,7 +27,7 @@ spec:
           - name: ACCOUNT_SERVICE_PASSWORD
             value: admin
           - name: MONGODB_CONNECTION_STRING
-            value: mongodb://piggy:nSpeYPy89Fs2KPSBe4ACXhaTOjnABHPqWCcufY4sPfD6NYDXNSaRGW9dZ8I8BBsx1oGU5IEI58EPEOTj4FjnJg==@piggy.documents.azure.com:10255/?ssl=true&replicaSet=globaldb
+            value: ${DB_CONNECTION_STRING}
         ports:
           - containerPort: 80
       imagePullSecrets:

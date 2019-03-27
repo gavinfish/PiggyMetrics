@@ -112,6 +112,7 @@ function login() {
         $(userAvatar).load(function() {
             setTimeout(initGreetingPage, 500);
         });
+        location.reload(true);
     } else {
         $("#preloader, #enter, #secondenter").hide();
         flipForm();
