@@ -1,0 +1,117 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: account-servcie
+spec:
+  hosts:
+  - account-service
+  http:
+  - route:
+    - destination:
+        host: account-servcie
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: auth-service
+spec:
+  hosts:
+  - auth-service
+  http:
+  - route:
+    - destination:
+        host: auth-service
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: config
+spec:
+  hosts:
+  - config
+  http:
+  - route:
+    - destination:
+        host: config
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: monitoring
+spec:
+  hosts:
+  - monitoring
+  http:
+  - route:
+    - destination:
+        host: monitoring
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: mq
+spec:
+  hosts:
+  - mq
+  http:
+  - route:
+    - destination:
+        host: mq
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: notification-service
+spec:
+  hosts:
+  - notification-service
+  http:
+  - route:
+    - destination:
+        host: notification-service
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: registry
+spec:
+  hosts:
+  - registry
+  http:
+  - route:
+    - destination:
+        host: registry
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: statistics-service
+spec:
+  hosts:
+  - statistics-service
+  http:
+  - route:
+    - destination:
+        host: statistics-service
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: turbine-stream-service
+spec:
+  hosts:
+  - turbine-stream-service
+  http:
+  - route:
+    - destination:
+        host: turbine-stream-service
+        subset: v1
+---

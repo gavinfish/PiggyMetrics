@@ -1,0 +1,98 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: account-service
+spec:
+  host: account-service
+  subsets:
+  - name: v1
+    labels:
+      role: blue
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: auth-service
+spec:
+  host: auth-service
+  subsets:
+  - name: v1
+    labels:
+      role: blue
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: config
+spec:
+  host: config
+  subsets:
+  - name: v1
+    labels:
+      role: blue
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: monitoring
+spec:
+  host: monitoring
+  subsets:
+  - name: v1
+    labels:
+      role: blue
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: mq
+spec:
+  host: mq
+  subsets:
+  - name: v1
+    labels:
+      role: blue
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: notification-service
+spec:
+  host: notification-service
+  subsets:
+  - name: v1
+    labels:
+      role: blue
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: registry
+spec:
+  host: registry
+  subsets:
+  - name: v1
+    labels:
+      role: blue
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: statistics-service
+spec:
+  host: statistics-service
+  subsets:
+  - name: v1
+    labels:
+      role: blue
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: turbine-stream-service
+spec:
+  host: turbine-stream-service
+  subsets:
+  - name: v1
+    labels:
+      role: blue

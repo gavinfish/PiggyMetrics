@@ -1,0 +1,60 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: piggy-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: gateway
+spec:
+  host: gateway
+  subsets:
+  - name: v1
+    labels:
+      role: blue
+  - name: canary
+    labels:
+      role: canary
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: piggy
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - piggy-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /accounts/current
+    route:
+    - destination:
+        host: account-service
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /uaa/oauth
+    route:
+    - destination:
+        host: auth-service
+        port:
+          number: 80
+  - route:
+    - destination:
+        host: gateway
+        port:
+          number: 80

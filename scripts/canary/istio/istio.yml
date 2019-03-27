@@ -1,0 +1,42 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: piggy
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - piggy-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /accounts/current
+    route:
+    - destination:
+        host: account-service
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /uaa/oauth
+    route:
+    - destination:
+        host: auth-service
+        port:
+          number: 80
+  - match:
+    - headers:
+        cookie:
+          regex: "^(.*?;)?(username=[^;]*@microsoft.com)(;.*)?$"
+    route:
+    - destination:
+        host: gateway
+        subset: canary
+        port:
+          number: 80
+  - route:
+    - destination:
+        host: gateway
+        subset: v1
+        port:
+          number: 80

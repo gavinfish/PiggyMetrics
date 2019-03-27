@@ -105,6 +105,14 @@ node('master') {
                     secretName: env.ACR_SECRET
             }
         }
+
+        acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+            configFilePaths: "scripts/canary/istio/gateway.yml", 
+            containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+            containerService: "$env.AKS_NAME | AKS",
+            enableConfigSubstitution: true, 
+            resourceGroupName: env.AKS_RES_GROUP,
+            secretName: env.ACR_SECRET
     }
 
     stage('preview-test') {
@@ -112,17 +120,17 @@ node('master') {
     }
 
     stage('switch') {
-        for (int i=0; i<folders.size(); i++) {
-            withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${TARGET_VERSION}"]){
-                acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                    configFilePaths: "scripts/canary/service/${folders[i]}.yaml", 
-                    containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
-                    containerService: "$env.AKS_NAME | AKS",
-                    enableConfigSubstitution: true, 
-                    resourceGroupName: env.AKS_RES_GROUP,
-                    secretName: env.ACR_SECRET
-            }
-        }
+        // for (int i=0; i<folders.size(); i++) {
+        //     withEnv(['IMAGE_TAG=latest', "TARGET_ROLE=${TARGET_VERSION}"]){
+        //         acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
+        //             configFilePaths: "scripts/canary/service/${folders[i]}.yaml", 
+        //             containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
+        //             containerService: "$env.AKS_NAME | AKS",
+        //             enableConfigSubstitution: true, 
+        //             resourceGroupName: env.AKS_RES_GROUP,
+        //             secretName: env.ACR_SECRET
+        //     }
+        // }
     }
 
     stage('confirm switch back') {
