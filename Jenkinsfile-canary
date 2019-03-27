@@ -106,13 +106,7 @@ node('master') {
             }
         }
 
-        acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-            configFilePaths: "scripts/canary/istio/gateway.yml", 
-            containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
-            containerService: "$env.AKS_NAME | AKS",
-            enableConfigSubstitution: true, 
-            resourceGroupName: env.AKS_RES_GROUP,
-            secretName: env.ACR_SECRET
+        sh "kubectl apply -f scripts/canary/istio/gateway.yml"
     }
 
     stage('preview-test') {
@@ -148,13 +142,7 @@ node('master') {
     
     if (userInput == true) {
         stage('apply istio') {
-                acsDeploy azureCredentialsId: env.AZURE_CRED_ID, 
-                    configFilePaths: "scripts/canary/istio/istio.yml", 
-                    containerRegistryCredentials: [[credentialsId: env.ACR_CREDENTIAL_ID, url: "http://$env.ACR_REGISTRY"]],
-                    containerService: "$env.AKS_NAME | AKS",
-                    enableConfigSubstitution: true, 
-                    resourceGroupName: env.AKS_RES_GROUP,
-                    secretName: env.ACR_SECRET
+        sh "kubectl apply -f scripts/canary/istio/istio.yml"
         }
     } else {
         // Send a notification
