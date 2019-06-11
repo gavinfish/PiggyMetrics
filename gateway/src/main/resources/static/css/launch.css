@@ -105,7 +105,7 @@ only screen and (min-resolution: 144dpi) {
 .FRONTCARD {
 	z-index: 2;
 	height: 450px;
-	background-color: white;
+	background-color: blue;
 	-webkit-transform: rotateY(0deg);
 	-moz-transform: rotateY(0deg);
 	-ms-transform: rotateY(0deg);
